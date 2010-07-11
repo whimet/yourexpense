@@ -1,0 +1,7 @@
+[{% for expense in expenses %}
+{'amount' : {{ expense.amount }},
+'date' : '{{ expense.datetime.date }}',
+'category' : '{{ expense.category }}',
+'comment' : '{{ expense.comment|addslashes }}'}
+{% if not forloop.last %},{% endif %}
+{% endfor %}]

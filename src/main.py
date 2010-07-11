@@ -14,6 +14,14 @@ class Expense(db.Model):
     comment = db.StringProperty()
 
 class ExpenseHandler(webapp.RequestHandler):
+    def get(self):
+        expense_query = Expense.all().order('-datetime')
+        expenses = expense_query.fetch(100)
+
+        template_values = { 'expenses': expenses }
+        path = os.path.join(os.path.dirname(__file__), '../templates/expenses.json')
+        self.response.out.write(template.render(path, template_values))
+        
     def post(self):
         expense = Expense()
 
@@ -24,7 +32,9 @@ class ExpenseHandler(webapp.RequestHandler):
         expense.category = self.request.get('category')
         expense.comment = self.request.get('comment')
         datestr = self.request.get('date')
-        expense.datetime = datetime.datetime(int(datestr[0:4]), int(datestr[4:6]), int(datestr[6:8]))
+        if len(datestr) >= 8 and datestr.isdigit():
+            expense.datetime = datetime.datetime(int(datestr[0:4]), int(datestr[4:6]), int(datestr[6:8]))
+            
         key = expense.put()
 
         if self.request.get('redirect') == 'true':
@@ -52,7 +62,7 @@ class MainPage(webapp.RequestHandler):
             'url_linktext': url_linktext,
             }
 
-        path = os.path.join(os.path.dirname(__file__), 'index.html')
+        path = os.path.join(os.path.dirname(__file__), '../templates/index.html')
         self.response.out.write(template.render(path, template_values))
 
 application = webapp.WSGIApplication(
