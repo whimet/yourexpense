@@ -4,6 +4,7 @@ from google.appengine.ext import db
 import os
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
+import datetime
 
 class Expense(db.Model):
     user = db.UserProperty()
@@ -22,6 +23,8 @@ class ExpenseHandler(webapp.RequestHandler):
         expense.amount = float(self.request.get('amount'))
         expense.category = self.request.get('category')
         expense.comment = self.request.get('comment')
+        datestr = self.request.get('date')
+        expense.datetime = datetime.datetime(int(datestr[0:4]), int(datestr[4:6]), int(datestr[6:8]))
         key = expense.put()
 
         if self.request.get('redirect') == 'true':
