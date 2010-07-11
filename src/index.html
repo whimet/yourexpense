@@ -1,0 +1,26 @@
+<html>
+  <body>
+    {% for expense in expenses %}
+      {% if expense.user %}
+        <b>{{ expense.user.nickname }}</b> spent:
+      {% else %}
+       An anonymous person spent:
+      {% endif %}
+      <blockquote>${{ expense.amount }} on {{ expense.datetime.date }} for {{ expense.category|escape }}
+          with comment: {{expense.comment|escape}}</blockquote>
+    {% endfor %}
+
+    <form action="/expense" method="post">
+      <div>
+          <input type="hidden" name="redirect" value="true"/>
+          <label for="amount">Amount</label> <input type="text" name="amount" id="amount" />
+          <label for="category">Category</label> <input type="text" name="category" id="category" />
+          <label for="comment">Comment</label> <input type="text" name="comment" id="comment" />
+      </div>
+      <div><input type="submit" value="Submit expense"></div>
+    </form>
+
+    <a href="{{ url }}">{{ url_linktext }}</a>
+
+  </body>
+</html>
