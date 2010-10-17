@@ -2,3 +2,4 @@ syntax:glob
 
 *.iws
 .DS_Store
+target
