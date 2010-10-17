@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+       default-init-method="init">
+
+    <context:annotation-config/>
+
+    <!--enable Spring support for configuring Spring AOP based on @AspectJ aspects-->
+    <aop:aspectj-autoproxy/>
+
+    <!-- This bean name 'filterChainProxy' is referenced in web.xml -->
+    <bean id="filterChainProxy" class="org.springframework.security.util.FilterChainProxy">
+        <property name="filterInvocationDefinitionSource">
+            <value>
+                CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+                PATTERN_TYPE_APACHE_ANT
+                /**=httpSessionContextIntegrationFilter,logoutFilter,basicProcessingFilter,authenticationProcessingFilter,anonymousProcessingFilter,filterInvocationInterceptor
+            </value>
+        </property>
+    </bean>
+
+    <bean id="httpSessionContextIntegrationFilter"
+          class="org.springframework.security.context.HttpSessionContextIntegrationFilter"/>
+
+    <bean id="logoutFilter" class="org.springframework.security.ui.logout.LogoutFilter" p:filterProcessesUrl="/logout">
+        <!-- URL redirected to after logout -->
+        <constructor-arg value="/"/>
+        <constructor-arg>
+            <list>
+                <bean class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="authenticationProcessingFilter"
+          class="org.springframework.security.ui.webapp.AuthenticationProcessingFilter"
+          p:authenticationManager-ref="authenticationManager"
+          p:authenticationFailureUrl="/login?login_error=1"
+          p:defaultTargetUrl="/"
+          p:filterProcessesUrl="/login_auth"
+          p:usernameParameter="name"
+          p:passwordParameter="password"/>
+
+    <bean id="authenticationManager" class="org.springframework.security.providers.ProviderManager">
+        <property name="providers">
+            <list>
+                <bean class="yourexpense.security.UserAuthenticationProvider"/>
+                <bean class="org.springframework.security.providers.anonymous.AnonymousAuthenticationProvider"
+                      p:key="anonymousKey"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="basicProcessingFilter" class="org.springframework.security.ui.basicauth.BasicProcessingFilter">
+        <property name="authenticationManager">
+            <ref bean="authenticationManager"/>
+        </property>
+        <property name="authenticationEntryPoint">
+            <bean class="org.springframework.security.ui.basicauth.BasicProcessingFilterEntryPoint">
+                <property name="realmName">
+                    <value>Cruise</value>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="filterInvocationInterceptor" class="org.springframework.security.intercept.web.FilterSecurityInterceptor">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="accessDecisionManager">
+            <bean class="org.springframework.security.vote.AffirmativeBased">
+                <property name="allowIfAllAbstainDecisions" value="false"/>
+                <property name="decisionVoters">
+                    <list>
+                        <bean class="org.springframework.security.vote.RoleVoter"/>
+                        <bean class="org.springframework.security.vote.AuthenticatedVoter"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <property name="objectDefinitionSource">
+            <value><![CDATA[
+                CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
+                PATTERN_TYPE_APACHE_ANT
+                /**=IS_AUTHENTICATED_ANONYMOUSLY
+            ]]></value>
+        </property>
+    </bean>
+
+
+    <!--
+     This filter returns 401 if basic auth failed, rather than redirecting to the login page.
+     This is used for CCTRAY feed (and should be used for other xml / rss style feeds so that
+     clients can automatically negotiate security
+    -->
+    <bean id="basicAuthenticationAccessDenied"
+          class="org.springframework.security.ui.ExceptionTranslationFilter">
+        <property name="authenticationEntryPoint" ref="basicProcessingFilterEntryPoint"/>
+        <property name="accessDeniedHandler">
+            <bean class="org.springframework.security.ui.AccessDeniedHandlerImpl"/>
+        </property>
+    </bean>
+
+    <bean id="basicProcessingFilterEntryPoint"
+          class="org.springframework.security.ui.basicauth.BasicProcessingFilterEntryPoint">
+        <property name="realmName">
+            <value>YourExpense</value>
+        </property>
+    </bean>
+
+</beans>

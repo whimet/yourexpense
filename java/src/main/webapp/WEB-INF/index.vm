@@ -7,24 +7,35 @@
     <title>Your expense</title>
 </head>
 <body>
-<p>
-Hello, your expense!
-</p>
-<div>
-    <a href="register">Register an user</a>
-</div>
-<div>
-    <a href="expense">Create new expense</a>
-</div>
-<div>
-    <ul>
-        #foreach ($expense in $expenses)
-            An anonymous person spent:
-            <blockquote> ￥$expense.amount on $expense.dateString for $expense.category with
-                comment: $expense.comment</blockquote>
 
-        #end
-    </ul>
+<div>
+    #if($user)
+        Welcome, $user, this is your expense!
+        <a href="/logout">Logout</a>
+    #else
+        Hello, your expense!
+        <a href="/login">Login</a>
+
+        <div>
+            <a href="register">Register an user</a>
+        </div>
+    #end
+</div>
+
+<div>
+    <div>
+        <a href="expense">Create new expense</a>
+    </div>
+    <div>
+        <ul>
+            #foreach ($expense in $expenses)
+                An anonymous person spent:
+                <blockquote> ￥$expense.amount on $expense.dateString for $expense.category with
+                    comment: $expense.comment</blockquote>
+
+            #end
+        </ul>
+    </div>
 </div>
 </body>
 </html>

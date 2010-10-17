@@ -9,6 +9,7 @@ public class User {
     private Long id;
 
     @Persistent
+    @Unique
     private String name;
 
     @Persistent

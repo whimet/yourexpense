@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import yourexpense.domain.Expense;
 import yourexpense.domain.PMF;
+import yourexpense.security.UserService;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
@@ -24,6 +25,8 @@ import java.util.List;
 public class ExpenseController {
     @Autowired
     private PersistenceManagerFactory factory;
+    @Autowired
+    private UserService userService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -35,6 +38,8 @@ public class ExpenseController {
     @RequestMapping("/")
     public ModelAndView index() {
         HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("user", userService.currentUser());
+
         PersistenceManager pm = factory.getPersistenceManager();
         try {
             Query query = pm.newQuery(Expense.class);
