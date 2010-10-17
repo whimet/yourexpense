@@ -21,7 +21,7 @@
         <tr>
             <td>
                 <label for="date">Date</label></td>
-            <td><input type="text" name="date" id="date"/></td>
+            <td><input type="text" name="date" id="date" value="$expense.dateString"/></td>
         </tr>
 
         <p/>

@@ -13,7 +13,7 @@ public class UserDao {
     @Autowired
     private PersistenceManagerFactory factory;
 
-    public User find(String username) {
+    public User findByName(String username) {
         PersistenceManager pm = factory.getPersistenceManager();
         try {
             Query query = pm.newQuery(User.class);
@@ -38,6 +38,15 @@ public class UserDao {
         PersistenceManager pm = factory.getPersistenceManager();
         try {
             pm.makePersistent(user);
+        } finally {
+            pm.close();
+        }
+    }
+
+    public User find(Long userId) {
+        PersistenceManager pm = factory.getPersistenceManager();
+        try {
+            return pm.getObjectById(User.class, userId);
         } finally {
             pm.close();
         }

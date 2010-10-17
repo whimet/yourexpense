@@ -42,7 +42,7 @@
           class="org.springframework.security.ui.webapp.AuthenticationProcessingFilter"
           p:authenticationManager-ref="authenticationManager"
           p:authenticationFailureUrl="/login?login_error=1"
-          p:defaultTargetUrl="/"
+          p:defaultTargetUrl="/expenses"
           p:filterProcessesUrl="/login_auth"
           p:usernameParameter="name"
           p:passwordParameter="password"/>
@@ -87,7 +87,11 @@
             <value><![CDATA[
                 CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
                 PATTERN_TYPE_APACHE_ANT
-                /**=IS_AUTHENTICATED_ANONYMOUSLY
+                /_ah/**=IS_AUTHENTICATED_ANONYMOUSLY
+                /=IS_AUTHENTICATED_ANONYMOUSLY
+                /login=IS_AUTHENTICATED_ANONYMOUSLY
+                /register=IS_AUTHENTICATED_ANONYMOUSLY
+                /**=ROLE_REGISTERED
             ]]></value>
         </property>
     </bean>

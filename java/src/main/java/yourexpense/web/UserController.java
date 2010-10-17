@@ -9,8 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 import yourexpense.domain.User;
 import yourexpense.domain.UserDao;
 
-import java.util.HashMap;
-
 import static java.lang.String.format;
 
 @Controller
@@ -25,7 +23,7 @@ public class UserController {
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
     public ModelAndView register(User user) {
-        if (userDao.find(user.getName()) != null) {
+        if (userDao.findByName(user.getName()) != null) {
             return new ModelAndView("register", "error", format("User[%s] already exists!", user.getName()));
         }
 

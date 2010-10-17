@@ -1,5 +1,6 @@
 package yourexpense.web;
 
+import com.google.appengine.api.datastore.Key;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -9,17 +10,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import yourexpense.domain.Expense;
-import yourexpense.domain.PMF;
+import yourexpense.domain.ExpenseDao;
+import yourexpense.domain.User;
+import yourexpense.domain.UserDao;
 import yourexpense.security.UserService;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
-import javax.jdo.Query;
-import java.util.ArrayList;
-import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 @Controller
 public class ExpenseController {
@@ -27,6 +27,10 @@ public class ExpenseController {
     private PersistenceManagerFactory factory;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private ExpenseDao expenseDao;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -37,40 +41,35 @@ public class ExpenseController {
 
     @RequestMapping("/")
     public ModelAndView index() {
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put("user", userService.currentUser());
+        return new ModelAndView("index", "username", userService.currentUserName());
+    }
 
-        PersistenceManager pm = factory.getPersistenceManager();
-        try {
-            Query query = pm.newQuery(Expense.class);
-            query.setOrdering("date desc");
-            List<Expense> result = (List<Expense>) query.execute();
-            ArrayList<Expense> list = new ArrayList<Expense>(result);
-            map.put("expenses", list);
-            query.closeAll();
-        } finally {
-            pm.close();
-        }
-        return new ModelAndView("index", map);
+    @RequestMapping("expenses")
+    public ModelAndView expenses() {
+        return new ModelAndView("expenses", "user", userService.currentUser());
     }
 
     @RequestMapping(value = "expense", method = RequestMethod.GET)
     public ModelAndView get() {
-        return new ModelAndView("expense");
+        return new ModelAndView("expense", "expense", new Expense());
     }
 
     @RequestMapping(value = "expense", method = RequestMethod.POST)
-    public ModelAndView post(Expense expense) {
+    public ModelAndView createExpense(Expense expense) {
         if (expense.getDate() == null) {
             expense.setDate(new Date());
         }
+        User user = userService.currentUser();
+        Key key = user.getKey();
         PersistenceManager pm = factory.getPersistenceManager();
         try {
+            User userInThisSession = pm.getObjectById(User.class, key);
+            expense.setUser(userInThisSession);
             pm.makePersistent(expense);
         } finally {
             pm.close();
         }
 
-        return new ModelAndView("redirect:/");
+        return new ModelAndView("redirect:/expenses");
     }
 }

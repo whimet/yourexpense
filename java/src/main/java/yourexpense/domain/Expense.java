@@ -3,12 +3,13 @@ package yourexpense.domain;
 import javax.jdo.annotations.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import com.google.appengine.api.datastore.Key;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@PersistenceCapable(identityType = IdentityType.APPLICATION, detachable = "true")
 public class Expense {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Long id;
+    private Key key;
 
     @Persistent
     private Float amount;
@@ -20,7 +21,10 @@ public class Expense {
     private String comment;
 
     @Persistent
-    private Date date;
+    private Date date = new Date();
+
+    @Persistent
+    private User user;
 
     public Float getAmount() {
         return amount;
@@ -56,5 +60,13 @@ public class Expense {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -14,7 +14,7 @@ import yourexpense.domain.UserDao;
 public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
     @Autowired
     private UserDao userDao;
-    private static final String ROLE_REGISTERED_USER = "registered_user";
+    private static final String ROLE_REGISTERED = "ROLE_REGISTERED";
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
@@ -24,11 +24,11 @@ public class UserAuthenticationProvider extends AbstractUserDetailsAuthenticatio
     @Override
     protected UserDetails retrieveUser(String username,
                                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws AuthenticationException {
-        User user = userDao.find(username);
+        User user = userDao.findByName(username);
         if (user == null) {
             throw new AuthenticationServiceException(String.format("No such user with name: %s", username));
         }
-        GrantedAuthority[] grantedAuthorities = {new GrantedAuthorityImpl(ROLE_REGISTERED_USER)};
+        GrantedAuthority[] grantedAuthorities = {new GrantedAuthorityImpl(ROLE_REGISTERED)};
         return new org.springframework.security.userdetails.User(user.getName(), user.getPassword(), true, true, true, true, grantedAuthorities);
     }
 }
