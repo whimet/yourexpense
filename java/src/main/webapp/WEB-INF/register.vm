@@ -1,0 +1,19 @@
+<html>
+<body>
+<form action="/register" method="post">
+    <input type="hidden" name="redirect" value="true"/>
+    <table>
+        <tr>
+            <td><label for="name">Name</label></td>
+            <td><input type="text" name="name" id="name"/></td>
+        </tr>
+        <tr>
+            <td><label for="password">Passwrod</label></td>
+            <td><input type="password" name="password" id="password"/></td>
+        </tr>
+    </table>
+    <div><input type="submit" value="Submit register"></div>
+</form>
+
+</body>
+</html>

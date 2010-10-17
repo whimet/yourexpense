@@ -11,6 +11,9 @@
 Hello, your expense!
 </p>
 <div>
+    <a href="register">Register an user</a>
+</div>
+<div>
     <a href="expense">Create new expense</a>
 </div>
 <div>

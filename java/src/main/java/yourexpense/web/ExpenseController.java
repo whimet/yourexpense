@@ -50,7 +50,7 @@ public class ExpenseController {
     }
 
     @RequestMapping(value = "expense", method = RequestMethod.GET)
-    public ModelAndView get(Expense expense) {
+    public ModelAndView get() {
         return new ModelAndView("expense");
     }
 
