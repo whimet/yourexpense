@@ -1,17 +1,22 @@
 <project name="Yourexpense" basedir="." default="runserver">
-    <property name="sdk.dir" location="/Users/twer/workspace/googleappengine/appengine-java-sdk-1.3.7"/>
+    <property environment="env"/>
+    <property name="sdk.dir" location="${env.SDK_DIR}"/>
 
     <import file="${sdk.dir}/config/user/ant-macros.xml"/>
 
     <property name="war.dir" value="${basedir}/target/yourexpense-1.0-SNAPSHOT"/>
 
     <target name="buildwar" description="Performs JDO enhancement on compiled data classes and copy SDK jars.">
-        <enhance_war war="${war.dir}"/>
         <copy todir="${war.dir}/WEB-INF/lib" flatten="true">
             <fileset dir="${sdk.dir}/lib/user">
                 <include name="**/*.jar"/>
             </fileset>
         </copy>
+        <delete>
+            <fileset dir="${war.dir}/WEB-INF/lib" includes="spring-core*.jar"/>
+        </delete>
+
+        <enhance_war war="${war.dir}"/>
     </target>
 
     <target name="runserver" depends="buildwar"
