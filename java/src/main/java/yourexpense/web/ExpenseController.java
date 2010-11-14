@@ -8,6 +8,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import yourexpense.domain.Expense;
 import yourexpense.domain.ExpenseDao;
@@ -20,6 +21,7 @@ import javax.jdo.PersistenceManagerFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @Controller
 public class ExpenseController {
@@ -47,6 +49,11 @@ public class ExpenseController {
     @RequestMapping("expenses")
     public ModelAndView expenses() {
         return new ModelAndView("expenses", "user", userService.currentUser());
+    }
+
+    @RequestMapping("expenses.json")
+    public @ResponseBody List<Expense> expensesJson() {
+        return userService.currentUser().getExpenses();
     }
 
     @RequestMapping(value = "expense", method = RequestMethod.GET)

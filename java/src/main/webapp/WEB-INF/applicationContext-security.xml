@@ -64,7 +64,7 @@
         <property name="authenticationEntryPoint">
             <bean class="org.springframework.security.ui.basicauth.BasicProcessingFilterEntryPoint">
                 <property name="realmName">
-                    <value>Cruise</value>
+                    <value>YourExpense</value>
                 </property>
             </bean>
         </property>
